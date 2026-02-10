@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Rezeptkarten</title>
+  <style>
+    body {
+      font-family: system-ui, Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: white;
+      width: 380px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    ul {
+      padding-left: 18px;
+    }
+
+    button {
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #ff8c42;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #e57732;
+    }
+
+    .time {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2 id="title">🍽️ Rezept ziehen</h2>
+  <p><strong>Zutaten:</strong></p>
+  <ul id="ingredients"></ul>
+  <p class="time" id="time"></p>
+  <button onclick="drawRecipe()">🎲 Zufälliges Rezept</button>
+</div>
+
+<script>
+const recipes = [
+  {
+    title: "Spaghetti Bolognese (mit / ohne Fleisch)",
+    ingredients: [
+      "Spaghetti",
+      "Hackfleisch oder Tofu",
+      "Tomaten (Dose oder passiert)",
+      "Zwiebeln, Knoblauch",
+      "Parmesan",
+      "Italienische Gewürze"
+    ],
+    time: "20–30 Minuten"
+  },
+  {
+    title: "Griechische Nudeln mit Feta-Gemüsesoße",
+    ingredients: [
+      "Griechische Nudeln",
+      "Zucchini, Aubergine, Paprika",
+      "Cherrytomaten",
+      "Zwiebeln, Knoblauch",
+      "Feta",
+      "Gewürze"
+    ],
+    time: "20–30 Minuten"
+  },
+  {
+    title: "Blätterteigtaschen",
+    ingredients: [
+      "Blätterteig",
+      "Frischkäse oder Schmand",
+      "Geriebener Käse",
+      "Belag nach Wahl (Feta, Spinat, Lachs etc.)"
+    ],
+    time: "20–30 Minuten"
+  },
+  {
+    title: "Tomaten-Mozzarella-Gnocchi-Auflauf",
+    ingredients: [
+      "Gnocchi oder Pasta",
+      "Cherrytomaten",
+      "Passierte Tomaten",
+      "Mozzarella",
+      "Sahne",
+      "Basilikum"
+    ],
+    time: "20–30 Minuten"
+  },
+  {
+    title: "Süßkartoffel-Auflauf mit Feta",
+    ingredients: [
+      "Süßkartoffeln",
+      "Cherrytomaten",
+      "Feta",
+      "Pinienkerne",
+      "Olivenöl, Thymian"
+    ],
+    time: "30–40 Minuten"
+  },
+  {
+    title: "Ofengemüse",
+    ingredients: [
+      "Kartoffeln, Süßkartoffeln",
+      "Paprika, Zucchini, Aubergine",
+      "Zwiebeln",
+      "Olivenöl, Gewürze",
+      "Optional: Feta oder Grillkäse"
+    ],
+    time: "20 Minuten"
+  },
+  {
+    title: "Smashed Potatoes",
+    ingredients: [
+      "Kartoffeln",
+      "Öl, Gewürze",
+      "Kräuterquark oder Sour Cream"
+    ],
+    time: "30 Minuten"
+  },
+  {
+    title: "Milchreis",
+    ingredients: [
+      "Milch",
+      "Milchreis",
+      "Apfelmus"
+    ],
+    time: "30 Minuten"
+  },
+  {
+    title: "Pilz-Risotto",
+    ingredients: [
+      "Risotto-Reis",
+      "Champignons",
+      "Zwiebeln",
+      "Weißwein",
+      "Gemüsebrühe",
+      "Parmesan"
+    ],
+    time: "40 Minuten"
+  },
+  {
+    title: "Kartoffelsuppe",
+    ingredients: [
+      "Kartoffeln",
+      "Gemüsebrühe",
+      "Zwiebeln",
+      "Würstchen",
+      "Sahne oder Creme fraiche"
+    ],
+    time: "30 Minuten"
+  }
+];
+
+function drawRecipe() {
+  const recipe = recipes[Math.floor(Math.random() * recipes.length)];
+
+  document.getElementById("title").textContent = "🥘 " + recipe.title;
+
+  const ul = document.getElementById("ingredients");
+  ul.innerHTML = "";
+  recipe.ingredients.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = item;
+    ul.appendChild(li);
+  });
+
+  document.getElementById("time").textContent = "⏱️ " + recipe.time;
+}
+</script>
+
+</body>
+</html>

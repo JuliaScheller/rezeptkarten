@@ -4,146 +4,135 @@
   <meta charset="UTF-8">
   <title>Rezeptkarten</title>
   <style>
-    :root{
-      --bg:#f4f4f4;
-      --card:#ffffff;
-      --text:#111;
-      --muted:#444;
-      --shadow: 0 12px 30px rgba(0,0,0,0.12);
-      --radius: 16px;
-      --accent:#ff8c42;
-      --accentHover:#e57732;
-      --border: rgba(0,0,0,0.08);
-    }
+  :root{
+    --bg:#f4f4f4;
+    --card:#ffffff;
+    --text:#111;
+    --muted:#555;
+    --shadow: 0 16px 40px rgba(0,0,0,0.14);
+    --radius: 20px;
+    --border: rgba(0,0,0,0.08);
+    --accent:#ff8c42;
+    --accentHover:#e57732;
+  }
 
-    * { box-sizing: border-box; }
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.35;
-    }
+  * { box-sizing: border-box; }
 
-    /* Mobile-friendly centering without the classic 100vh issues */
-    .wrap{
-      min-height: 100svh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 18px;
-    }
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.4;
+  }
 
-    .card{
-      width: min(560px, 100%);
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px;
-    }
+  .wrap{
+    min-height: 100svh;
+    display:flex;
+    justify-content:center;
+    padding: 20px 16px;
+  }
 
-    header{
-      display:flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
+  main{
+    width: 100%;
+    max-width: 600px;   /* größer als vorher */
+  }
 
-    h1{
-      font-size: clamp(20px, 4.5vw, 28px);
-      margin: 0;
-    }
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 24px;      /* mehr Innenabstand */
+  }
 
-    .sub{
-      color: var(--muted);
-      font-size: 14px;
-      margin: 0;
-    }
+  h1{
+    margin:0 0 8px;
+    font-size: clamp(24px, 5vw, 32px);  /* größerer Titel */
+  }
 
-    .section-title{
-      margin: 14px 0 8px;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 0.02em;
-      color: var(--muted);
-    }
+  .sub{
+    margin:0 0 14px;
+    color: var(--muted);
+    font-size: 15px;
+  }
 
-    ul{
-      margin: 0;
-      padding-left: 18px;
-    }
-    li{
-      margin: 6px 0;
-      word-break: break-word;
-    }
+  .section-title{
+    margin: 18px 0 8px;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
 
-    .meta{
-      display:flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 14px;
-      align-items:center;
-      justify-content: space-between;
-    }
+  ul{
+    margin: 0;
+    padding-left: 20px;
+  }
 
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.03);
-      font-weight: 600;
-      font-size: 14px;
-      width: fit-content;
-      max-width: 100%;
-    }
+  li{
+    margin: 8px 0;
+    font-size: 17px;   /* besser lesbar auf Mobile */
+  }
 
+  .meta{
+    margin-top: 18px;
+  }
+
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:999px;
+    border:1px solid var(--border);
+    background:rgba(0,0,0,0.04);
+    font-weight:600;
+  }
+
+  .actions{
+    margin-top: 20px;
+    display:flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  button{
+    border:0;
+    border-radius:14px;
+    padding:16px;
+    font-size:17px;
+    font-weight:700;
+    cursor:pointer;
+    min-height:52px;  /* gute Touchgröße */
+  }
+
+  .primary{
+    background: var(--accent);
+    color:#fff;
+  }
+
+  .primary:hover{
+    background: var(--accentHover);
+  }
+
+  .secondary{
+    background:#fff;
+    border:1px solid var(--border);
+  }
+
+  /* Desktop: Buttons nebeneinander */
+  @media (min-width: 768px){
     .actions{
-      display:flex;
-      gap: 10px;
-      margin-top: 14px;
-      flex-wrap: wrap;
+      flex-direction: row;
     }
-
     button{
-      appearance:none;
-      border:0;
-      border-radius: 12px;
-      padding: 14px 14px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor:pointer;
-      min-height: 48px;            /* touch target */
-      flex: 1 1 180px;             /* responsive buttons */
+      flex:1;
     }
+  }
+</style>
 
-    .primary{
-      background: var(--accent);
-      color: #fff;
-    }
-    .primary:hover{ background: var(--accentHover); }
-
-    .secondary{
-      background: #fff;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .secondary:hover{ background: rgba(0,0,0,0.03); }
-
-    .empty{
-      color: var(--muted);
-      font-size: 14px;
-      margin: 8px 0 0;
-    }
-
-    /* Reduce motion for accessibility */
-    @media (prefers-reduced-motion: reduce){
-      * { scroll-behavior: auto !important; }
-    }
-  </style>
 </head>
 <body>
   <div class="wrap">

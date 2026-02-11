@@ -9,9 +9,9 @@
     --card:#ffffff;
     --text:#111;
     --muted:#555;
-    --shadow: 0 16px 40px rgba(0,0,0,0.14);
+    --border: rgba(0,0,0,0.10);
+    --shadow: 0 14px 34px rgba(0,0,0,0.14);
     --radius: 20px;
-    --border: rgba(0,0,0,0.08);
     --accent:#ff8c42;
     --accentHover:#e57732;
   }
@@ -23,115 +23,145 @@
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.4;
+    line-height: 1.35;
   }
 
+  /* Centered “card” layout */
   .wrap{
     min-height: 100svh;
     display:flex;
+    align-items:center;
     justify-content:center;
-    padding: 20px 16px;
+    padding: 14px;
   }
 
-  main{
-    width: 100%;
-    max-width: 600px;   /* größer als vorher */
-  }
-
+  /* Card behaves like a “near square” on mobile */
   .card{
+    width: min(640px, 100%);
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    padding: 24px;      /* mehr Innenabstand */
+    padding: 18px;
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  h1{
-    margin:0 0 8px;
-    font-size: clamp(24px, 5vw, 32px);  /* größerer Titel */
+  /* Mobile: card gets a controlled height so it feels like a real card */
+  @media (max-width: 520px){
+    .card{
+      height: min(78svh, 520px);  /* “almost square” feel */
+      padding: 16px;
+    }
+  }
+
+  header{
+    display:flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  h2, h1{
+    margin:0;
+    font-size: clamp(22px, 6.2vw, 30px);
+    letter-spacing: -0.01em;
   }
 
   .sub{
-    margin:0 0 14px;
+    margin:0;
     color: var(--muted);
-    font-size: 15px;
+    font-size: clamp(14px, 4vw, 16px);
   }
 
   .section-title{
-    margin: 18px 0 8px;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.04em;
+    margin-top: 6px;
+    font-weight: 750;
+    font-size: 13px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--muted);
   }
 
+  /* The content area consumes remaining space and scrolls if needed */
+  .content{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 0;        /* IMPORTANT for scrolling in flex layouts */
+    flex: 1 1 auto;
+  }
+
   ul{
-    margin: 0;
-    padding-left: 20px;
+    margin:0;
+    padding-left: 18px;
+    overflow:auto;        /* scroll if list is long */
+    -webkit-overflow-scrolling: touch;
+    border-radius: 14px;
+    padding-right: 6px;
   }
 
   li{
     margin: 8px 0;
-    font-size: 17px;   /* besser lesbar auf Mobile */
+    font-size: clamp(16px, 4.6vw, 18px); /* larger on mobile */
+    word-break: break-word;
+  }
+
+  .empty{
+    margin:0;
+    color: var(--muted);
+    font-size: clamp(14px, 4vw, 16px);
   }
 
   .meta{
-    margin-top: 18px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   .pill{
     display:inline-flex;
     align-items:center;
-    gap:8px;
-    padding:10px 14px;
-    border-radius:999px;
-    border:1px solid var(--border);
-    background:rgba(0,0,0,0.04);
-    font-weight:600;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.04);
+    font-weight: 700;
+    font-size: clamp(14px, 4vw, 16px);
   }
 
   .actions{
-    margin-top: 20px;
     display:flex;
-    flex-direction: column;
-    gap: 12px;
+    gap: 10px;
+    flex-wrap: wrap;
   }
 
   button{
+    appearance:none;
     border:0;
-    border-radius:14px;
-    padding:16px;
-    font-size:17px;
-    font-weight:700;
+    border-radius: 14px;
+    padding: 14px 14px;
+    font-size: clamp(16px, 4.8vw, 18px);
+    font-weight: 800;
     cursor:pointer;
-    min-height:52px;  /* gute Touchgröße */
+    min-height: 52px;          /* touch target */
+    flex: 1 1 180px;
   }
 
-  .primary{
-    background: var(--accent);
-    color:#fff;
-  }
-
-  .primary:hover{
-    background: var(--accentHover);
-  }
+  .primary{ background: var(--accent); color:#fff; }
+  .primary:hover{ background: var(--accentHover); }
 
   .secondary{
     background:#fff;
     border:1px solid var(--border);
+    color: var(--text);
   }
-
-  /* Desktop: Buttons nebeneinander */
-  @media (min-width: 768px){
-    .actions{
-      flex-direction: row;
-    }
-    button{
-      flex:1;
-    }
-  }
+  .secondary:hover{ background: rgba(0,0,0,0.03); }
 </style>
+
 
 </head>
 <body>
@@ -142,9 +172,13 @@
         <p class="sub">Tippe auf „Zufälliges Rezept“, um eine Karte zu ziehen.</p>
       </header>
 
-      <div class="section-title">Zutaten</div>
-      <ul id="ingredients"></ul>
-      <p id="emptyHint" class="empty">Noch kein Rezept gezogen.</p>
+     <div class="section-title">Zutaten</div>
+
+<div class="content">
+  <ul id="ingredients"></ul>
+  <p id="emptyHint" class="empty">Noch kein Rezept gezogen.</p>
+</div>
+
 
       <div class="meta">
         <div id="timePill" class="pill" style="display:none;">⏱️ <span id="time"></span></div>

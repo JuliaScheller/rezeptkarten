@@ -4,193 +4,360 @@
   <meta charset="UTF-8">
   <title>Rezeptkarten</title>
   <style>
-    body {
-      font-family: system-ui, Arial, sans-serif;
-      background: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+    :root{
+      --bg:#f4f4f4;
+      --card:#ffffff;
+      --text:#111;
+      --muted:#444;
+      --shadow: 0 12px 30px rgba(0,0,0,0.12);
+      --radius: 16px;
+      --accent:#ff8c42;
+      --accentHover:#e57732;
+      --border: rgba(0,0,0,0.08);
+    }
+
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.35;
+    }
+
+    /* Mobile-friendly centering without the classic 100vh issues */
+    .wrap{
+      min-height: 100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+    }
+
+    .card{
+      width: min(560px, 100%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    header{
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    h1{
+      font-size: clamp(20px, 4.5vw, 28px);
       margin: 0;
     }
 
-    .card {
-      background: white;
-      width: 380px;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    .sub{
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0;
     }
 
-    h2 {
-      margin-top: 0;
+    .section-title{
+      margin: 14px 0 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      color: var(--muted);
     }
 
-    ul {
+    ul{
+      margin: 0;
       padding-left: 18px;
     }
+    li{
+      margin: 6px 0;
+      word-break: break-word;
+    }
 
-    button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 12px;
+    .meta{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+      align-items:center;
+      justify-content: space-between;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.03);
+      font-weight: 600;
+      font-size: 14px;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    button{
+      appearance:none;
+      border:0;
+      border-radius: 12px;
+      padding: 14px 14px;
       font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      background: #ff8c42;
-      color: white;
-      cursor: pointer;
+      font-weight: 700;
+      cursor:pointer;
+      min-height: 48px;            /* touch target */
+      flex: 1 1 180px;             /* responsive buttons */
     }
 
-    button:hover {
-      background: #e57732;
+    .primary{
+      background: var(--accent);
+      color: #fff;
+    }
+    .primary:hover{ background: var(--accentHover); }
+
+    .secondary{
+      background: #fff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .secondary:hover{ background: rgba(0,0,0,0.03); }
+
+    .empty{
+      color: var(--muted);
+      font-size: 14px;
+      margin: 8px 0 0;
     }
 
-    .time {
-      margin-top: 10px;
-      font-weight: bold;
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce){
+      * { scroll-behavior: auto !important; }
     }
   </style>
 </head>
 <body>
+  <div class="wrap">
+    <main class="card" aria-live="polite">
+      <header>
+        <h1 id="title">🍽️ Rezept ziehen</h1>
+        <p class="sub">Tippe auf „Zufälliges Rezept“, um eine Karte zu ziehen.</p>
+      </header>
 
-<div class="card">
-  <h2 id="title">🍽️ Rezept ziehen</h2>
-  <p><strong>Zutaten:</strong></p>
-  <ul id="ingredients"></ul>
-  <p class="time" id="time"></p>
-  <button onclick="drawRecipe()">🎲 Zufälliges Rezept</button>
-</div>
+      <div class="section-title">Zutaten</div>
+      <ul id="ingredients"></ul>
+      <p id="emptyHint" class="empty">Noch kein Rezept gezogen.</p>
+
+      <div class="meta">
+        <div id="timePill" class="pill" style="display:none;">⏱️ <span id="time"></span></div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" type="button" onclick="drawRecipe()">🎲 Zufälliges Rezept</button>
+        <button class="secondary" type="button" onclick="drawRecipe(true)">🔁 Nochmal (anders)</button>
+      </div>
+    </main>
+  </div>
 
 <script>
-const recipes = [
-  {
-    title: "Spaghetti Bolognese (mit / ohne Fleisch)",
-    ingredients: [
-      "Spaghetti",
-      "Hackfleisch oder Tofu",
-      "Tomaten (Dose oder passiert)",
-      "Zwiebeln, Knoblauch",
-      "Parmesan",
-      "Italienische Gewürze"
-    ],
-    time: "20–30 Minuten"
-  },
-  {
-    title: "Griechische Nudeln mit Feta-Gemüsesoße",
-    ingredients: [
-      "Griechische Nudeln",
-      "Zucchini, Aubergine, Paprika",
-      "Cherrytomaten",
-      "Zwiebeln, Knoblauch",
-      "Feta",
-      "Gewürze"
-    ],
-    time: "20–30 Minuten"
-  },
-  {
-    title: "Blätterteigtaschen",
-    ingredients: [
-      "Blätterteig",
-      "Frischkäse oder Schmand",
-      "Geriebener Käse",
-      "Belag nach Wahl (Feta, Spinat, Lachs etc.)"
-    ],
-    time: "20–30 Minuten"
-  },
-  {
-    title: "Tomaten-Mozzarella-Gnocchi-Auflauf",
-    ingredients: [
-      "Gnocchi oder Pasta",
-      "Cherrytomaten",
-      "Passierte Tomaten",
-      "Mozzarella",
-      "Sahne",
-      "Basilikum"
-    ],
-    time: "20–30 Minuten"
-  },
-  {
-    title: "Süßkartoffel-Auflauf mit Feta",
-    ingredients: [
-      "Süßkartoffeln",
-      "Cherrytomaten",
-      "Feta",
-      "Pinienkerne",
-      "Olivenöl, Thymian"
-    ],
-    time: "30–40 Minuten"
-  },
-  {
-    title: "Ofengemüse",
-    ingredients: [
-      "Kartoffeln, Süßkartoffeln",
-      "Paprika, Zucchini, Aubergine",
-      "Zwiebeln",
-      "Olivenöl, Gewürze",
-      "Optional: Feta oder Grillkäse"
-    ],
-    time: "20 Minuten"
-  },
-  {
-    title: "Smashed Potatoes",
-    ingredients: [
-      "Kartoffeln",
-      "Öl, Gewürze",
-      "Kräuterquark oder Sour Cream"
-    ],
-    time: "30 Minuten"
-  },
-  {
-    title: "Milchreis",
-    ingredients: [
-      "Milch",
-      "Milchreis",
-      "Apfelmus"
-    ],
-    time: "30 Minuten"
-  },
-  {
-    title: "Pilz-Risotto",
-    ingredients: [
-      "Risotto-Reis",
-      "Champignons",
-      "Zwiebeln",
-      "Weißwein",
-      "Gemüsebrühe",
-      "Parmesan"
-    ],
-    time: "40 Minuten"
-  },
-  {
-    title: "Kartoffelsuppe",
-    ingredients: [
-      "Kartoffeln",
-      "Gemüsebrühe",
-      "Zwiebeln",
-      "Würstchen",
-      "Sahne oder Creme fraiche"
-    ],
-    time: "30 Minuten"
+  const recipes = [
+    {
+      title: "Spaghetti Bolognese (mit / ohne Fleisch)",
+      ingredients: [
+        "Spaghetti",
+        "Hackfleisch oder Tofu",
+        "Tomaten (Dose oder passiert)",
+        "Zwiebeln, Knoblauch",
+        "Parmesan",
+        "Italienische Gewürze",
+        "Optional: Salat"
+      ],
+      time: "20–30 Minuten"
+    },
+    {
+      title: "Griechische Nudeln mit Feta-Gemüsesoße",
+      ingredients: [
+        "Griechische Nudeln",
+        "Knoblauch, Zwiebeln",
+        "Cherrytomaten",
+        "Zucchini, Aubergine, Paprika",
+        "Feta",
+        "Optional: Tomatenmark / passierte Tomaten",
+        "Salz, Pfeffer, Gewürze"
+      ],
+      time: "20–30 Minuten"
+    },
+    {
+      title: "Blätterteigtaschen",
+      ingredients: [
+        "Blätterteig",
+        "Frischkäse (Kräuter/Natur) oder Schmand",
+        "Geriebener Käse",
+        "Füllung nach Wahl: Tomaten+Feta | Zwiebeln+Champignons+Käse | Lachs | Schinkenwürfel | Feta+Spinat",
+        "Optional: Salat"
+      ],
+      time: "20–30 Minuten"
+    },
+    {
+      title: "Tomaten-Mozzarella-Gnocchi bzw. Nudel-Auflauf",
+      ingredients: [
+        "Gnocchi oder Pasta",
+        "Cherrytomaten",
+        "Passierte Tomaten",
+        "Zwiebel, Knoblauch",
+        "Sahne",
+        "Mozzarella",
+        "Parmesan",
+        "Basilikum"
+      ],
+      time: "20–30 Minuten"
+    },
+    {
+      title: "Süßkartoffel-Auflauf mit Feta",
+      ingredients: [
+        "Süßkartoffeln",
+        "Cherrytomaten",
+        "Feta",
+        "Pinienkerne",
+        "Olivenöl, z. B. Thymian"
+      ],
+      time: "30–40 Minuten"
+    },
+    {
+      title: "Ofengemüse",
+      ingredients: [
+        "Kartoffeln",
+        "Süßkartoffeln",
+        "Paprika, Zucchini, Aubergine",
+        "Zwiebeln",
+        "Olivenöl, Gewürze",
+        "Optional: Feta oder Grillkäse",
+        "Kräuterquark / Sour Cream",
+        "Optional: Salat"
+      ],
+      time: "20 Minuten"
+    },
+    {
+      title: "Smashed Potatoes",
+      ingredients: [
+        "Kartoffeln",
+        "Öl, Gewürze",
+        "Kräuterquark / Sour Cream",
+        "Dazu z. B.: Steak oder Salat"
+      ],
+      time: "30 Minuten"
+    },
+    {
+      title: "Pasta mit Kürbis",
+      ingredients: [
+        "Pasta",
+        "Kürbis",
+        "Sahne",
+        "Speck",
+        "Parmesan"
+      ],
+      time: "30 Minuten"
+    },
+    {
+      title: "Pizza",
+      ingredients: [
+        "Fertigteig oder (Hefe, Mehl, Olivenöl)",
+        "Tomaten (Dose)",
+        "Käse",
+        "Belag nach Wahl: Paprika, Mais, Champignons, Schinken/Salami, Cocktailtomaten"
+      ],
+      time: "40 Minuten"
+    },
+    {
+      title: "Milchreis",
+      ingredients: [
+        "Milch",
+        "Milchreis",
+        "Apfelmus"
+      ],
+      time: "30 Minuten"
+    },
+    {
+      title: "Pilz-Risotto",
+      ingredients: [
+        "Pilze (Champignons)",
+        "Risotto-Reis",
+        "Zwiebeln",
+        "Weißwein",
+        "Gemüsebrühe",
+        "Parmesan"
+      ],
+      time: "40 Minuten"
+    },
+    {
+      title: "Kartoffelsuppe",
+      ingredients: [
+        "Kartoffeln",
+        "Gemüsebrühe",
+        "Würstchen",
+        "Zwiebeln",
+        "Sahne / Creme fraiche"
+      ],
+      time: "30 Minuten"
+    },
+    {
+      title: "Pasta mit Erbsen",
+      ingredients: [
+        "Pasta",
+        "TK-Erbsen",
+        "Sahne",
+        "Parmesan",
+        "Optional: Zitrone",
+        "Optional: Schinkenwürfel"
+      ],
+      time: "20 Minuten"
+    }
+  ];
+
+  let lastIndex = -1;
+
+  function render(recipe){
+    document.getElementById("title").textContent = "🥘 " + recipe.title;
+
+    const ul = document.getElementById("ingredients");
+    ul.innerHTML = "";
+    recipe.ingredients.forEach(item => {
+      const li = document.createElement("li");
+      li.textContent = item;
+      ul.appendChild(li);
+    });
+
+    document.getElementById("emptyHint").style.display = "none";
+
+    document.getElementById("time").textContent = recipe.time;
+    document.getElementById("timePill").style.display = "inline-flex";
   }
-];
 
-function drawRecipe() {
-  const recipe = recipes[Math.floor(Math.random() * recipes.length)];
+  function drawRecipe(avoidSame = false){
+    if (recipes.length === 0) return;
 
-  document.getElementById("title").textContent = "🥘 " + recipe.title;
+    let idx = Math.floor(Math.random() * recipes.length);
 
-  const ul = document.getElementById("ingredients");
-  ul.innerHTML = "";
-  recipe.ingredients.forEach(item => {
-    const li = document.createElement("li");
-    li.textContent = item;
-    ul.appendChild(li);
-  });
+    if (avoidSame && recipes.length > 1) {
+      while (idx === lastIndex) {
+        idx = Math.floor(Math.random() * recipes.length);
+      }
+    }
 
-  document.getElementById("time").textContent = "⏱️ " + recipe.time;
-}
+    lastIndex = idx;
+    render(recipes[idx]);
+  }
 </script>
-
 </body>
 </html>
+
+  
